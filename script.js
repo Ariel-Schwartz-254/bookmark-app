@@ -37,12 +37,14 @@ function validate(nameValue, urlValue) {
 
 // Fetch Bookmarks from Local Storage
 function fetchBookmarks() {
-    const defaultBookmarks = [
-        {
-            name: 'Google',
-            url: 'https://google.com'
-        }
-    ]
+    const id = 'https://google.com';
+    const defaultBookmarks = { 
+        'https://google.com': 
+            {
+                name: 'Google',
+                url: 'https://google.com' 
+            }
+    };
     localStorageBookmarks = JSON.parse(localStorage.getItem('bookmarks'));
     return localStorageBookmarks ? localStorageBookmarks : defaultBookmarks;
 }
@@ -51,8 +53,8 @@ function fetchBookmarks() {
 function buildBookmarks() {
     // Remove all bookmark elements
     bookmarksContainer.textContent = '';
-    bookmarks.forEach(bookmark => {
-        const { name, url } = bookmark;
+    Object.keys(bookmarks).forEach(id => {
+        const { name, url } = bookmarks[id];
         // Item
         const item = document.createElement('div');
         item.classList.add('item');
@@ -82,11 +84,7 @@ function buildBookmarks() {
 
 // Delete Bookmark
 function deleteBookmark(url) {
-    bookmarks.forEach((bookmark, i) => {
-        if (bookmark.url === url) {
-            bookmarks.splice(i, 1);
-        }
-    });
+    delete bookmarks[url];
     // Update bookmarks array in localStorage, re-populate DOM
     localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
     bookmarks = fetchBookmarks();
@@ -108,7 +106,7 @@ function storeBookmark(event) {
         name: nameValue,
         url: urlValue
     }
-    bookmarks.push(bookmark);
+    bookmarks[urlValue] = bookmark;
     localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
     buildBookmarks();
     bookmarkForm.reset();
